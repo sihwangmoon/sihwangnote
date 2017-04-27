@@ -6,6 +6,11 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import api from './routes';
 
+import WebpackDevServer from 'webpack-dev-server';
+import webpack from 'webpack';
+
+const devPort = 4000;
+
 //db connection
 const db = mongoose.connection;
 db.on('error', console.error);
@@ -15,6 +20,13 @@ mongoose.connect('mongodb://localhost/test');
 
 const app = express();
 const port = 3000;
+
+//session
+app.use(session({
+    secret : 'SiH1w2a3n4g',
+    resave : false,
+    saveUninitialized : true
+}));
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -27,17 +39,7 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something broke!');
 });
 
-//session
-app.use(session({
-    secret : 'SiHwang1$2$3$4',
-    resave : false,
-    saveUninitialized : true
-}));
 
-
-app.get('/hello', (req, res) =>{
-    return res.send('Hello sihwang');
-});
 
 app.get('*', (req, res)=>{
     res.sendFile(path.resolve(__dirname, './../public/index.html'))
@@ -46,3 +48,15 @@ app.get('*', (req, res)=>{
 app.listen(port, () => {
     console.log('listening on port', port);
 });
+
+if(process.env.NODE_ENV == 'development') {
+    console.log('Server is running on development mode');
+    const config = require('../webpack.config.dev');
+    const compiler = webpack(config);
+    const devServer = new WebpackDevServer(compiler, config.devServer);
+    devServer.listen(
+        devPort, () => {
+            console.log('webpack-dev-server is listening on port', devPort);
+        }
+    );
+}
