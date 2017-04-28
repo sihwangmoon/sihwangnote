@@ -17,6 +17,7 @@ db.on('error', console.error);
 db.once('open', ()=>{console.log('Connected to mongodb server');});
 
 mongoose.connect('mongodb://localhost/test');
+mongoose.Promise = global.Promise;
 
 const app = express();
 const port = 3000;
@@ -32,6 +33,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use('/api', api);
 app.use('/', express.static(path.join(__dirname, './../public')));
+
 
 
 app.use(function (err, req, res, next) {
