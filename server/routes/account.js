@@ -104,4 +104,20 @@ router.post('/logout', (req, res) => {
     return res.json({success : true});
 });
 
+/*search user*/
+router.get('/search/:username', (req, res) => {
+    var re = new RegExp('^' + req.params.username);
+    Account.find({username : {$regex : re}}, {_id: false, username: true})
+        .limit(5)
+        .sort({username:1})
+        .exec((err, accounts) =>{
+            if(err) throw err;
+            res.json(accounts);
+        });
+});
+
+router.get('/search', (req, res) =>{
+    res.json([]);
+});
+
 export default router;
