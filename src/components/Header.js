@@ -46,18 +46,20 @@ class Header extends React.Component {
                         <Link to="/" className="brand-logo center">SihwangNote</Link>
 
                         <ul>
-                            <li><a><i className="material-icons">search</i></a></li>
+                            <li><a onClick={this.toggleSearch}><i className="material-icons">search</i></a></li>
                         </ul>
 
                         <div className="right">
                             <ul>
-                                {this.props.isLoggedIn ? logoutButton : loginButton }
+                                {this.props.isLoggedIn ? logoutButton : loginButton}
                             </ul>
                         </div>
                     </div>
                 </nav>
-                <ReactCSSTransitionGroup transitionName="search" transitionEnterTimeout={300}
-                                         transitionLeaveTimeout={300}>
+                <ReactCSSTransitionGroup
+                    transitionName="search"
+                    transitionEnterTimeout={300}
+                    transitionLeaveTimeout={300}>
                     {this.state.search ? <Search onClose={this.toggleSearch}
                         onSearch={this.props.onSearch}
                         usernames={this.props.usernames}/> : undefined}

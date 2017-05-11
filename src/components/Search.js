@@ -12,7 +12,7 @@ class Search extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
-        this.handlekeyDown = this.handlekeyDown.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
 
         const listenEscKey = (evt) => {
             evt = evt || window.event;
@@ -54,6 +54,23 @@ class Search extends React.Component {
 
     render() {
 
+        // const mapToComponents = data =>{
+        //     return data.map((memo, i) => {
+        //         return(
+        //             <Memo
+        //                 data = {memo}
+        //                 ownership = {memo.writer === this.props.currentUser}
+        //                 key = {memo._id}
+        //                 onEdit={this.props.onEdit}
+        //                 onRemove={this.props.onRemove}
+        //                 onStar={this.props.onStar}
+        //                 index={i}
+        //                 currentUser={this.props.currentUser}
+        //                 />
+        //         );
+        //     });
+        // };
+
         const mapDataToLinks = (data) =>{
             return data.map((user, i) => {
                 return (
@@ -65,7 +82,7 @@ class Search extends React.Component {
         };
 
         return (
-            <div className="search-screen white-text">
+            <div className="search-screen black-text">
                 <div className="right">
                     <a className="waves-effect waves-light btn red lighten-1"
                        onClick={this.handleClose}>CLOSE</a>

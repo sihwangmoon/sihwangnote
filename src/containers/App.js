@@ -48,7 +48,6 @@ class App extends React.Component {
 
         this.props.getStatusRequest().then(
             () => {
-                console.log(this.props.status);
 
                 if(!this.props.status.valid){
                     loginData = {

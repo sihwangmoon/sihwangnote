@@ -3,6 +3,7 @@ import Account from '../models/account';
 
 const router = express.Router();
 
+//signup
 router.post('/signup', (req, res) => {
 
     let usernameRegex = /^[a-z0-9]+$/;
@@ -44,6 +45,7 @@ router.post('/signup', (req, res) => {
     });
 });
 
+//signin
 router.post('/signin', (req, res) => {
 
     if(typeof req.body.password !== "string") {
@@ -53,11 +55,10 @@ router.post('/signin', (req, res) => {
         });
     }
 
-    // FIND THE USER BY USERNAME
+    //find user by username
     Account.findOne({ username: req.body.username}, (err, account) => {
         if(err) throw err;
 
-        // CHECK ACCOUNT EXISTANCY
         if(!account) {
             return res.status(401).json({
                 error: "LOGIN FAILED",
@@ -65,7 +66,6 @@ router.post('/signin', (req, res) => {
             });
         }
 
-        // CHECK WHETHER THE PASSWORD IS VALID
         if(!account.validateHash(req.body.password)) {
             return res.status(401).json({
                 error: "LOGIN FAILED",
@@ -73,16 +73,15 @@ router.post('/signin', (req, res) => {
             });
         }
 
-        console.log("why ?");
-        console.log(account._id);
-        console.log(account.username);
+        // console.log("why ?");
+        // console.log(account._id);
+        // console.log(account.username);
         var session = req.session;
         session.loginInfo = {
             username: account.username,
             _id: account._id
         };
 
-        // RETURN SUCCESS
         return res.json({
             success: true
         });
@@ -99,12 +98,13 @@ router.get('/getinfo', (req, res) => {
     res.json({info: req.session.loginInfo});
 });
 
+//logout
 router.post('/logout', (req, res) => {
     req.session.destroy(err => {if(err) throw err; });
     return res.json({success : true});
 });
 
-/*search user*/
+//search user
 router.get('/search/:username', (req, res) => {
     var re = new RegExp('^' + req.params.username);
     Account.find({username : {$regex : re}}, {_id: false, username: true})

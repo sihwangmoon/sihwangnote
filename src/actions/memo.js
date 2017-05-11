@@ -19,7 +19,7 @@ import {
 
 import axios from 'axios';
 
-/* MEMO POST */
+//MemoPost
 export function memoPostRequest(contents) {
     return (dispatch) => {
         dispatch(memoPost());
@@ -52,7 +52,7 @@ export function memoPostFailure(error) {
     };
 }
 
-/*MEMO LIST*/
+//Memolist
 export function memoListRequest(isInitial, listType, id, username) {
     return (dispatch) => {
         // to be implemented
@@ -96,8 +96,7 @@ export function memoListFailure() {
     };
 }
 
-/*MEMO EDIT*/
-
+//Memo Edit
 export function memoEditRequest(id, index, contents) {
     return (dispatch) => {
         dispatch(memoEdit());
@@ -133,7 +132,7 @@ export function memoEditFailure(error) {
 }
 
 
-/*MEMO REMOVE*/
+//Memo Remove
 export function memoRemoveRequest(id, index){
     return(dispatch) =>{
         dispatch(memoRemove());
@@ -169,6 +168,8 @@ export function memoRemoveFailure(error){
 
 export function memoStarRequest(id, index){
     return(dispatch) =>{
+
+        dispatch(memoStar());
 
         return axios.post('/api/memo/star/' + id)
             .then((response) => {

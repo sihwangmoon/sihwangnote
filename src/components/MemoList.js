@@ -4,10 +4,10 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 class MemoList extends React.Component {
 
-    shouldComponentUpdate(nextProps, nextState){
-        let update =JSON.stringify(this.props) !== JSON.stringify(nextProps);
-        return update;
-    }
+    // shouldComponentUpdate(nextProps, nextState){
+    //     let update =JSON.stringify(this.props) !== JSON.stringify(nextProps);
+    //     return update;
+    // }
 
     render() {
 

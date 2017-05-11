@@ -35,8 +35,7 @@ class Memo extends React.Component {
     }
 
     componentDidMount() {
-        // WHEN COMPONENT MOUNTS, INITIALIZE DROPDOWN
-        // (TRIGGERED WHEN REFRESHED)
+
         $('#dropdown-button-' + this.props.data._id).dropdown({
             belowOrigin: true // Displays dropdown below the button
         });
@@ -89,7 +88,7 @@ class Memo extends React.Component {
         var {data, ownership} = this.props;
 
         let editedInfo = (
-            <span style={{color: '#AAB5BC'}}> · Edited <TimeAgo date={this.props.data.date.edited} live={true}/></span>
+            <span style={{color: '#AAB5BC'}}> · Edited <TimeAgo date={this.props.data.date.edited} live={false}/></span>
         );
 
         let starStyle = (this.props.data.starred.indexOf(this.props.currentUser) > -1) ? {color : '#ff9980'} : {};
@@ -112,7 +111,7 @@ class Memo extends React.Component {
         const memoView = (
             <div className="card">
                 <div className="info">
-                    <Link to={`/wall/${this.props.data.writer}`} className="username">{this.props.data.writer}</Link> wrote a log · <TimeAgo date={this.props.data.date.created}/>
+                    <Link to={`/wall/${this.props.data.writer}`} className="username">{this.props.data.writer}</Link> wrote <TimeAgo date={this.props.data.date.created}/>
                     {this.props.data.is_edited ? editedInfo : undefined}
                     {this.props.ownership ? dropDownMenu : undefined }
                 </div>
@@ -183,7 +182,6 @@ Memo.defaultProps = {
     onStar :(id, index) => {
         console.error('star function not defined');
     },
-    starStatus: {},
     currentUser: ''
 };
 

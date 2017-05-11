@@ -1,5 +1,9 @@
+var webpack = require('webpack');
 module.exports = {
-    entry: './src/index.js',
+    entry: [
+        './src/index.js',
+        'babel-polyfill'
+        ],
 
     output: {
         path: __dirname + '/public/',
@@ -17,5 +21,18 @@ module.exports = {
                 exclude: /node_modules/,
             }
         ]
-    }
+    },
+
+    plugins:[
+      new webpack.DefinePlugin({
+          'process.env' : {
+              'NODE_ENV' : JSON.stringify('production')
+          }
+      }),
+        new webpack.optimize.UglifyJsPlugin({
+            compress:{
+                warnings : true
+            }
+        })
+    ]
 };

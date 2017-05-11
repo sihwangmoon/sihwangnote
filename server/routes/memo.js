@@ -4,8 +4,10 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 
+
+//Write
 router.post('/', (req, res) => {
-    // CHECK LOGIN STATUS
+
     if (typeof req.session.loginInfo === 'undefined') {
         return res.status(403).json({
             error: "NOT LOGGED IN",
@@ -13,7 +15,7 @@ router.post('/', (req, res) => {
         });
     }
 
-    // CHECK CONTENTS VALID
+    //check contents
     if (typeof req.body.contents !== 'string') {
         return res.status(400).json({
             error: "EMPTY CONTENTS",
@@ -28,22 +30,21 @@ router.post('/', (req, res) => {
         });
     }
 
-    // CREATE NEW MEMO
     let memo = new Memo({
         writer: req.session.loginInfo.username,
         contents: req.body.contents
     });
 
-    // SAVE IN DATABASE
+    //save in db
     memo.save(err => {
         if (err) throw err;
         return res.json({success: true});
     });
 });
 
+//Modify
 router.put('/:id', (req, res) => {
 
-    // CHECK MEMO ID VALIDITY
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
             error: "INVALID ID",
@@ -51,7 +52,6 @@ router.put('/:id', (req, res) => {
         });
     }
 
-    // CHECK CONTENTS VALID
     if (typeof req.body.contents !== 'string') {
         return res.status(400).json({
             error: "EMPTY CONTENTS",
@@ -66,7 +66,7 @@ router.put('/:id', (req, res) => {
         });
     }
 
-    // CHECK LOGIN STATUS
+    //check logininfo
     if (typeof req.session.loginInfo === 'undefined') {
         return res.status(403).json({
             error: "NOT LOGGED IN",
@@ -74,11 +74,9 @@ router.put('/:id', (req, res) => {
         });
     }
 
-    // FIND MEMO
     Memo.findById(req.params.id, (err, memo) => {
         if (err) throw err;
 
-        // IF MEMO DOES NOT EXIST
         if (!memo) {
             return res.status(404).json({
                 error: "NO RESOURCE",
@@ -86,7 +84,6 @@ router.put('/:id', (req, res) => {
             });
         }
 
-        // IF EXISTS, CHECK WRITER
         if (memo.writer != req.session.loginInfo.username) {
             return res.status(403).json({
                 error: "PERMISSION FAILURE",
@@ -94,7 +91,6 @@ router.put('/:id', (req, res) => {
             });
         }
 
-        // MODIFY AND SAVE IN DATABASE
         memo.contents = req.body.contents;
         memo.date.edited = new Date();
         memo.is_edited = true;
@@ -110,9 +106,9 @@ router.put('/:id', (req, res) => {
     });
 });
 
+//Delete
 router.delete('/:id', (req, res) => {
 
-    // CHECK MEMO ID VALIDITY
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
             error: "INVALID ID",
@@ -120,7 +116,6 @@ router.delete('/:id', (req, res) => {
         });
     }
 
-    // CHECK LOGIN STATUS
     if (typeof req.session.loginInfo === 'undefined') {
         return res.status(403).json({
             error: "NOT LOGGED IN",
@@ -128,7 +123,6 @@ router.delete('/:id', (req, res) => {
         });
     }
 
-    // FIND MEMO AND CHECK FOR WRITER
     Memo.findById(req.params.id, (err, memo) => {
         if (err) throw err;
 
@@ -145,7 +139,6 @@ router.delete('/:id', (req, res) => {
             });
         }
 
-        // REMOVE THE MEMO
         Memo.remove({_id: req.params.id}, err => {
             if (err) throw err;
             res.json({success: true});
@@ -154,27 +147,21 @@ router.delete('/:id', (req, res) => {
 
 });
 
-/*
- READ MEMO: GET /api/memo
- */
+//Read memo
 router.get('/', (req, res) => {
     Memo.find()
         .sort({"_id": -1})
-        .limit(6)
+        .limit(7)
         .exec((err, memos) => {
             if (err) throw err;
             res.json(memos);
         });
 });
 
-/*
- READ ADDITIONAL (OLD/NEW) MEMO: GET /api/memo/:listType/:id
- */
-router.get('/:username/:listType/:id', (req, res) => {
+router.get('/:listType/:id', (req, res) => {
     let listType = req.params.listType;
     let id = req.params.id;
 
-    // CHECK LIST TYPE VALIDITY
     if (listType !== 'old' && listType !== 'new') {
         return res.status(400).json({
             error: "INVALID LISTTYPE",
@@ -182,7 +169,6 @@ router.get('/:username/:listType/:id', (req, res) => {
         });
     }
 
-    // CHECK MEMO ID VALIDITY
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({
             error: "INVALID ID",
@@ -193,19 +179,20 @@ router.get('/:username/:listType/:id', (req, res) => {
     let objId = new mongoose.Types.ObjectId(req.params.id);
 
     if (listType === 'new') {
-        // GET NEWER MEMO
-        Memo.find({ writer:req.params.username, _id: {$gt: objId}})
-            .sort({_id: -1})
-            .limit(6)
-            .exec((err, memos) => {
-                if (err) throw err;
-                return res.json(memos);
-            });
+
+        Memo.find({_id : {$gt : objId}})
+            .sort({_id :-1})
+            .limit(7)
+            .exec((err, memos) =>{
+            if(err) throw err;
+            return res.json(memos);
+        });
+
     } else {
-        // GET OLDER MEMO
-        Memo.find({writer: req.params.username, _id: {$lt: objId}})
+
+        Memo.find({_id: {$lt: objId}})
             .sort({_id: -1})
-            .limit(6)
+            .limit(7)
             .exec((err, memos) => {
                 if (err) throw err;
                 return res.json(memos);
@@ -213,6 +200,7 @@ router.get('/:username/:listType/:id', (req, res) => {
     }
 });
 
+//STAR memo
 router.post('/star/:id', (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({
@@ -259,10 +247,12 @@ router.post('/star/:id', (req, res) => {
     });
 });
 
+
+//Search Memo of a user
 router.get('/:username', (req, res) => {
     Memo.find({writer: req.params.username})
         .sort({"_id": -1})
-        .limit(6)
+        .limit(7)
         .exec((err, memos) => {
             if (err) throw err;
             res.json(memos);
@@ -292,7 +282,7 @@ router.get('/:username/:listType/:id', (req, res) => {
     if (listType === 'new') {
         Memo.find({writer: req.params.username, _id: {$gt: objId}})
             .sort({_id: -1})
-            .limit(6)
+            .limit(7)
             .exec((err, memos) => {
                 if (err) throw err;
                 return res.json(memos);
@@ -300,7 +290,7 @@ router.get('/:username/:listType/:id', (req, res) => {
     } else {
         Memo.find({writer: req.params.username, _id: {$lt: objId}})
             .sort({_id: -1})
-            .limit(6)
+            .limit(7)
             .exec((err, memos) => {
                 if (err) throw err;
                 return res.json(memos);
